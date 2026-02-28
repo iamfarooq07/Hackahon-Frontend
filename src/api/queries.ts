@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "./auth";
+import type { RegisterInput } from "./auth";
 
 export const authKeys = {
   me: ["auth", "me"] as const,
@@ -33,8 +34,7 @@ export function useRegister() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      authApi.register(email, password),
+    mutationFn: (data: RegisterInput) => authApi.register(data),
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);

@@ -2,13 +2,13 @@
 
 import { createContext, useContext, ReactNode } from "react";
 import { useMe, useLogin, useRegister, useLogout } from "@/api/queries";
-import type { User } from "@/api/auth";
+import type { User, RegisterInput } from "@/api/auth";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ user: User } | void>;
+  register: (data: RegisterInput) => Promise<{ user: User } | void>;
   logout: () => Promise<void>;
 }
 
@@ -25,11 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loading = hasToken && meQuery.isLoading;
 
   const login = async (email: string, password: string) => {
-    await loginMutation.mutateAsync({ email, password });
+    const data = await loginMutation.mutateAsync({ email, password });
+    return data;
   };
 
-  const register = async (email: string, password: string) => {
-    await registerMutation.mutateAsync({ email, password });
+  const register = async (data: Parameters<typeof registerMutation.mutateAsync>[0]) => {
+    const res = await registerMutation.mutateAsync(data);
+    return res;
   };
 
   const logout = async () => {

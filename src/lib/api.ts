@@ -1,9 +1,12 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+// Backend API base URL (include /api). Default: backend on port 5001.
+const baseURL =
+  (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim()) ||
+  "http://localhost:5001/api";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL,
 });
 
 api.interceptors.request.use((config) => {
@@ -28,7 +31,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, {
+        const { data } = await axios.post(`${baseURL}/auth/refresh`, {
           refreshToken,
         });
         localStorage.setItem("accessToken", data.accessToken);
