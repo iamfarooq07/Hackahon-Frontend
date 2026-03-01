@@ -6,6 +6,26 @@ import { patientsApi } from "@/services/api";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Link from "next/link";
 
+type Appointment = {
+  _id: string;
+  date: string;
+  status: string;
+  doctorId?: { name: string };
+};
+
+type Prescription = {
+  _id: string;
+  createdAt?: string;
+  medicines?: { name: string }[];
+};
+
+type DiagnosisLog = {
+  _id: string;
+  symptoms: string;
+  riskLevel: string;
+  createdAt?: string;
+};
+
 export default function PatientDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -36,16 +56,16 @@ export default function PatientDetailPage() {
     );
   }
 
-  const { patient, appointments, prescriptions, diagnosisLogs } = data;
+  const patient = data.patient as { name: string; age: number; gender: string; contact: string };
+  const appointments = (data.appointments ?? []) as Appointment[];
+  const prescriptions = (data.prescriptions ?? []) as Prescription[];
+  const diagnosisLogs = (data.diagnosisLogs ?? []) as DiagnosisLog[];
 
   return (
     <ProtectedRoute allowedRoles={["admin", "doctor", "receptionist"]}>
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/patients"
-            className="text-slate-400 hover:text-white"
-          >
+          <Link href="/dashboard/patients" className="text-slate-400 hover:text-white">
             ← Patients
           </Link>
         </div>
@@ -62,7 +82,7 @@ export default function PatientDetailPage() {
             {appointments.length === 0 ? (
               <p className="text-slate-500">No appointments.</p>
             ) : (
-              appointments.map((a: { _id: string; date: string; status: string; doctorId?: { name: string } }) => (
+              appointments.map((a) => (
                 <div
                   key={a._id}
                   className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-800/30 px-4 py-3"
@@ -85,7 +105,7 @@ export default function PatientDetailPage() {
             {prescriptions.length === 0 ? (
               <p className="text-slate-500">No prescriptions.</p>
             ) : (
-              prescriptions.map((pr: { _id: string; createdAt?: string; medicines?: { name: string }[] }) => (
+              prescriptions.map((pr) => (
                 <div
                   key={pr._id}
                   className="rounded-lg border border-slate-800 bg-slate-800/30 px-4 py-3"
@@ -94,7 +114,7 @@ export default function PatientDetailPage() {
                     {pr.createdAt && new Date(pr.createdAt).toLocaleDateString()}
                   </p>
                   <p className="text-white">
-                    {pr.medicines?.map((m: { name: string }) => m.name).join(", ")}
+                    {pr.medicines?.map((m) => m.name).join(", ")}
                   </p>
                   <Link
                     href={`/dashboard/prescriptions?id=${pr._id}`}
@@ -114,7 +134,7 @@ export default function PatientDetailPage() {
             {diagnosisLogs.length === 0 ? (
               <p className="text-slate-500">No diagnosis logs.</p>
             ) : (
-              diagnosisLogs.map((log: { _id: string; symptoms: string; riskLevel: string; createdAt?: string }) => (
+              diagnosisLogs.map((log) => (
                 <div
                   key={log._id}
                   className="rounded-lg border border-slate-800 bg-slate-800/30 px-4 py-3"
