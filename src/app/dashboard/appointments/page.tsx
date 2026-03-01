@@ -181,7 +181,7 @@ function AddAppointmentModal({
   onClose: () => void;
   onSubmit: (data: { patientId: string; doctorId: string; date: string; status?: string }) => void;
   loading: boolean;
-  error: unknown;
+  error: Error | null;
 }) {
   const [patientId, setPatientId] = useState("");
   const [doctorId, setDoctorId] = useState(defaultDoctorId ?? "");
@@ -198,7 +198,7 @@ function AddAppointmentModal({
         <h2 className="mb-4 text-lg font-semibold text-white">Book Appointment</h2>
         {error && (
           <p className="mb-4 rounded-lg bg-red-500/10 p-2 text-sm text-red-400">
-            {String(error)}
+            {error.message}
           </p>
         )}
         <form
