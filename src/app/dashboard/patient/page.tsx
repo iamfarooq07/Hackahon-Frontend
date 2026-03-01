@@ -9,7 +9,7 @@ export default function PatientDashboardPage() {
   const name = user?.name?.trim() || "Patient";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 bg-gray-400">
       <PageHeader
         title={`Welcome, ${name}`}
         subtitle="View your appointments and prescriptions"
